@@ -154,18 +154,20 @@ public class FirebasePlugin extends CordovaPlugin {
             }
             return true;
         } else if (action.equals("getByteArray")) {
-            if (args.length() > 1) {
-                this.getByteArray(callbackContext, args.getString(0), args.getString(1));
-            } else {
-                this.getByteArray(callbackContext, args.getString(0), null);
-            }
+//             if (args.length() > 1) {
+//                 this.getByteArray(callbackContext, args.getString(0), args.getString(1));
+//             } else {
+//                 this.getByteArray(callbackContext, args.getString(0), null);
+//             }
+            this.getByteArray(callbackContext, args.getString(0));
             return true;
         } else if (action.equals("getValue")) {
-            if (args.length() > 1) {
-                this.getValue(callbackContext, args.getString(0), args.getString(1));
-            } else {
-                this.getValue(callbackContext, args.getString(0), null);
-            }
+//             if (args.length() > 1) {
+//                 this.getValue(callbackContext, args.getString(0), args.getString(1));
+//             } else {
+//                 this.getValue(callbackContext, args.getString(0), null);
+//             }
+            this.getValue(callbackContext, args.getString(0));
             return true;
         } else if (action.equals("getInfo")) {
             this.getInfo(callbackContext);
@@ -174,11 +176,12 @@ public class FirebasePlugin extends CordovaPlugin {
             this.setConfigSettings(callbackContext, args.getJSONObject(0));
             return true;
         } else if (action.equals("setDefaults")) {
-            if (args.length() > 1) {
-                this.setDefaults(callbackContext, args.getJSONObject(0), args.getString(1));
-            } else {
-                this.setDefaults(callbackContext, args.getJSONObject(0), null);
-            }
+//             if (args.length() > 1) {
+//                 this.setDefaults(callbackContext, args.getJSONObject(0), args.getString(1));
+//             } else {
+//                 this.setDefaults(callbackContext, args.getJSONObject(0), null);
+//             }
+            this.setDefaults(callbackContext, args.getJSONObject(0));
             return true;
         } else if (action.equals("verifyPhoneNumber")) {
             this.verifyPhoneNumber(callbackContext, args.getString(0), args.getInt(1));
@@ -602,12 +605,14 @@ public class FirebasePlugin extends CordovaPlugin {
         });
     }
 
-    private void getByteArray(final CallbackContext callbackContext, final String key, final String namespace) {
+//     private void getByteArray(final CallbackContext callbackContext, final String key, final String namespace) {
+    private void getByteArray(final CallbackContext callbackContext, final String key) {
       cordova.getThreadPool().execute(new Runnable() {
         public void run() {
             try {
-                byte[] bytes = namespace == null ? FirebaseRemoteConfig.getInstance().getByteArray(key)
-                        : FirebaseRemoteConfig.getInstance().getByteArray(key, namespace);
+//                 byte[] bytes = namespace == null ? FirebaseRemoteConfig.getInstance().getByteArray(key)
+//                         : FirebaseRemoteConfig.getInstance().getByteArray(key, namespace);
+                byte[] bytes = FirebaseRemoteConfig.getInstance().getByteArray(key);
                 JSONObject object = new JSONObject();
                 object.put("base64", Base64.encodeToString(bytes, Base64.DEFAULT));
                 object.put("array", new JSONArray(bytes));
@@ -620,13 +625,15 @@ public class FirebasePlugin extends CordovaPlugin {
       });
     }
 
-    private void getValue(final CallbackContext callbackContext, final String key, final String namespace) {
+//     private void getValue(final CallbackContext callbackContext, final String key, final String namespace) {
+    private void getValue(final CallbackContext callbackContext, final String key) {
       cordova.getThreadPool().execute(new Runnable() {
         public void run() {
             try {
-                FirebaseRemoteConfigValue value = namespace == null
-                        ? FirebaseRemoteConfig.getInstance().getValue(key)
-                        : FirebaseRemoteConfig.getInstance().getValue(key, namespace);
+//                 FirebaseRemoteConfigValue value = namespace == null
+//                         ? FirebaseRemoteConfig.getInstance().getValue(key)
+//                         : FirebaseRemoteConfig.getInstance().getValue(key, namespace);
+                FirebaseRemoteConfigValue value = FirebaseRemoteConfig.getInstance().getValue(key);
                 callbackContext.success(value.asString());
             } catch (Exception e) {
                 Crashlytics.logException(e);
@@ -676,14 +683,15 @@ public class FirebasePlugin extends CordovaPlugin {
         });
     }
 
-    private void setDefaults(final CallbackContext callbackContext, final JSONObject defaults, final String namespace) {
+//     private void setDefaults(final CallbackContext callbackContext, final JSONObject defaults, final String namespace) {
+    private void setDefaults(final CallbackContext callbackContext, final JSONObject defaults) {
         cordova.getThreadPool().execute(new Runnable() {
             public void run() {
                 try {
-                    if (namespace == null)
+//                     if (namespace == null)
                         FirebaseRemoteConfig.getInstance().setDefaults(defaultsToMap(defaults));
-                    else
-                        FirebaseRemoteConfig.getInstance().setDefaults(defaultsToMap(defaults), namespace);
+//                     else
+//                         FirebaseRemoteConfig.getInstance().setDefaults(defaultsToMap(defaults), namespace);
                     callbackContext.success();
                 } catch (Exception e) {
                     Crashlytics.logException(e);
@@ -882,7 +890,8 @@ public class FirebasePlugin extends CordovaPlugin {
                     }
 
                     if (myTrace != null && myTrace instanceof Trace) {
-                        myTrace.incrementCounter(counterNamed);
+//                         myTrace.incrementCounter(counterNamed);
+                        myTrace.incrementMetric(counterNamed, 1);
                         callbackContext.success();
                     } else {
                         callbackContext.error("Trace not found");
